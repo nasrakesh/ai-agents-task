@@ -1,46 +1,40 @@
 substitutions:
-  _ENV: "dev"   # default, but will be overridden by trigger
+  _ENV: "dev"   # default, overwritten by trigger
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
-    id: "Stage 1 - Always Run"
+    id: "Stage 1"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        echo "🚀 Stage 1 executing..."
-        echo "Environment passed = ${_ENV}"
-        echo "Project ID: $PROJECT_ID"
-        echo "Current directory:"
-        ls -lah
+        echo "Stage 1 running..."
+        echo "_ENV = ${_ENV}"
 
-  # ---------- DEV Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
-    id: "Stage 2 - DEV Logic"
+    id: "DEV Stage"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        if [ "${_ENV}" = "dev" ]; then
-          echo "🟩 Running DEV stage..."
-          echo "Do dev-related actions here..."
+        if [[ "${_ENV}" == "dev" ]]; then
+          echo "Running DEV stage..."
         else
-          echo "Skipping DEV stage because _ENV = ${_ENV}"
+          echo "Skipping DEV..."
         fi
 
-  # ---------- PROD Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
-    id: "Stage 2 - PROD Logic"
+    id: "PROD Stage"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        if [ "${_ENV}" = "prod" ]; then
-          echo "🟥 Running PROD stage..."
-          echo "Do prod-related actions here..."
+        if [[ "${_ENV}" == "prod" ]]; then
+          echo "Running PROD stage..."
         else
-          echo "Skipping PROD stage because _ENV = ${_ENV}"
+          echo "Skipping PROD..."
         fi
 
 options:
   logging: CLOUD_LOGGING_ONLY
+``
