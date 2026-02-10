@@ -1,5 +1,5 @@
 substitutions:
-  _ENV: "prod"   # default, overwritten by trigger
+  _ENV: "dev"
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
@@ -11,28 +11,30 @@ steps:
         echo "Stage 1 running..."
         echo "_ENV = ${_ENV}"
 
+  # ---------- DEV Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
     id: "DEV Stage"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        if [[ "${_ENV}" == "dev" ]]; then
+        if [ "$_ENV" = "dev" ]; then
           echo "Running DEV stage..."
         else
-          echo "Skipping DEV..."
+          echo "Skipping DEV stage... ENV=${_ENV}"
         fi
 
+  # ---------- PROD Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
     id: "PROD Stage"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        if [[ "${_ENV}" == "prod" ]]; then
+        if [ "$_ENV" = "prod" ]; then
           echo "Running PROD stage..."
         else
-          echo "Skipping PROD..."
+          echo "Skipping PROD stage... ENV=${_ENV}"
         fi
 
 options:
