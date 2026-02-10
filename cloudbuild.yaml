@@ -1,5 +1,5 @@
 substitutions:
-  _ENV: "prod"
+  _ENV: "dev"
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
