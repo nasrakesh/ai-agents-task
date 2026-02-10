@@ -1,5 +1,7 @@
-substitutions:
-  _ENV: "dev"
+# Tag-based conditional stages using Cloud Build's built-in $TAG_NAME
+# Triggers:
+#   - Dev:  Event = Push new tag, Tag regex = ^dev-.*$
+#   - Prod: Event = Push new tag, Tag regex = ^prod-.*$
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
@@ -9,7 +11,8 @@ steps:
       - "-c"
       - |
         echo "Stage 1 running..."
-        echo "_ENV = ${_ENV}"
+        echo "Project: $PROJECT_ID"
+        echo "TAG_NAME: ${TAG_NAME:-<none>}"
 
   # ---------- DEV Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
@@ -18,11 +21,16 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$_ENV" = "dev" ]; then
-          echo "Running DEV stage..."
-        else
-          echo "Skipping DEV stage... ENV=${_ENV}"
-        fi
+        case "${TAG_NAME}" in
+          dev-*) 
+            echo "Running DEV stage for tag: ${TAG_NAME}"
+            # yahan dev ke real actions likho
+            ;;
+          *)
+            echo "Skipping DEV stage... TAG_NAME=${TAG_NAME}"
+            exit 0
+            ;;
+        esac
 
   # ---------- PROD Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
@@ -31,11 +39,5 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$_ENV" = "prod" ]; then
-          echo "Running PROD stage..."
-        else
-          echo "Skipping PROD stage... ENV=${_ENV}"
-        fi
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+        case "${TAG_NAME}" in
+          prod-*) 
