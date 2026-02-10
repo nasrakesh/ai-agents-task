@@ -1,0 +1,12 @@
+steps:
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'echo Build Started: $(date) && ls -la'
+steps:
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'echo Build Started: $(date) && ls -la'
