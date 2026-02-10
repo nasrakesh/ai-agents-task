@@ -1,7 +1,8 @@
-# Tag-based conditional stages using Cloud Build's built-in $TAG_NAME 
+# Tag-based conditional stages using Cloud Build's built-in $TAG_NAME
 # Triggers:
-    - Dev:  Event = Push new tag, Tag regex = ^dev-.*$
+   - Dev:  Event = Push new tag, Tag regex = ^dev-.*$
 #   - Prod: Event = Push new tag, Tag regex = ^prod-.*$
+
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
