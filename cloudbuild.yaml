@@ -1,5 +1,5 @@
 substitutions:
-  _ENV: "dev"   # default, but will be overridden by trigger
+  _ENV: "prod"   # default, but will be overridden by trigger
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
