@@ -1,34 +1,13 @@
-# Cloud Build config: Creates a GCS bucket for logs/artifacts if it doesn't exist.
-
-substitutions:
-  _REGION: "asia-south1"
-  _BUCKET_NAME: "gcp-proctorand-cloudbuild-logs"
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "Cloud Build pipeline triggered successfully!"
+        echo "Project ID: $PROJECT_ID"
+        echo "Build working directory:"
+        ls -lah
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
-steps:
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    id: "Create GCS bucket if missing"
-    entrypoint: bash
-    args:
-      - -ceu
-      - |
-        BUCKET="gs://${_BUCKET_NAME}-${_REGION}"
-        echo "Using bucket: $BUCKET in region ${_REGION}"
-
-        echo "Checking if bucket exists..."
-        if gsutil ls -b "$BUCKET" >/dev/null 2>&1; then
-          echo "Bucket already exists: $BUCKET"
-        else
-          echo "Creating bucket: $BUCKET"
-          gsutil mb -p "$PROJECT_ID" -l "${_REGION}" -c STANDARD "$BUCKET"
-
-          echo "Enabling uniform access..."
-          gsutil uniformbucketlevelaccess set on "$BUCKET"
-
-          echo "Enabling versioning..."
-          gsutil versioning set on "$BUCKET"
-        fi
-
-        echo "Bucket setup completed successfully."
