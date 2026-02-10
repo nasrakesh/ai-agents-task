@@ -1,45 +1,34 @@
-# Cloud Build config: creates a GCS bucket for logs/artifacts if it doesn't exist.
-# Place this file at the repository root as `cloudbuild.yaml`.
+# Cloud Build config: Creates a GCS bucket for logs/artifacts if it doesn't exist.
 
 substitutions:
-  # Change this if you want a different region; asia-south1 is closest to Noida/Mumbai.
-  _REGION: asia-south1
-  # Change the bucket name if you prefer a custom one.
-  _BUCKET_NAME: gcp-proctor-cloudbuild-logs-${_REGION}
+  _REGION: "asia-south1"
+  _BUCKET_NAME: "gcp-proctorand-cloudbuild-logs"
 
 options:
-  # This ensures your build runs even when a custom service account is specified
-  # (it removes the requirement to preconfigure logs_bucket).
   logging: CLOUD_LOGGING_ONLY
 
 steps:
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    id: "Create/validate GCS bucket"
+    id: "Create GCS bucket if missing"
     entrypoint: bash
     args:
       - -ceu
       - |
-        echo "Project: ${PROJECT_ID}"
-        echo "Region: ${_REGION}"
-        BUCKET="gs://${_BUCKET_NAME}"
+        BUCKET="gs://${_BUCKET_NAME}-${_REGION}"
+        echo "Using bucket: $BUCKET in region ${_REGION}"
 
-        echo "Checking if bucket exists: ${BUCKET}"
-        if gsutil ls -b "${BUCKET}" >/dev/null 2>&1; then
-          echo "Bucket already exists: ${BUCKET}"
+        echo "Checking if bucket exists..."
+        if gsutil ls -b "$BUCKET" >/dev/null 2>&1; then
+          echo "Bucket already exists: $BUCKET"
         else
-          echo "Creating bucket: ${BUCKET} in region: ${_REGION}"
-          # Create regional bucket in your project with Standard storage
-          gsutil mb -p "${PROJECT_ID}" -l "${_REGION}" -c STANDARD "${BUCKET}"
+          echo "Creating bucket: $BUCKET"
+          gsutil mb -p "$PROJECT_ID" -l "${_REGION}" -c STANDARD "$BUCKET"
 
-          echo "Enabling Uniform bucket-level access"
-          gsutil uniformbucketlevelaccess set on "${BUCKET}"
+          echo "Enabling uniform access..."
+          gsutil uniformbucketlevelaccess set on "$BUCKET"
 
-          echo "Enabling Object Versioning (optional but recommended)"
-          gsutil versioning set on "${BUCKET}"
-
-          # Optional: set handy labels (safe to ignore failures)
-          gsutil label ch -l env:ci -l owner:cloudbuild "${BUCKET}" || true
+          echo "Enabling versioning..."
+          gsutil versioning set on "$BUCKET"
         fi
 
-        echo "Bucket ready: ${BUCKET}"
-        echo "Tip: In your Cloud Build Trigger → Advanced, you can set this as the 'Logs bucket' if you prefer GCS logs."
+        echo "Bucket setup completed successfully."
