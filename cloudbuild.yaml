@@ -1,8 +1,3 @@
-Tag-base d conditional stages using Cloud Build's built-in $TAG_NAME
-Triggers:
-  - Dev:  Event = Push new tag, Tag regex = ^dev$
-  - Prod: Event = Push new tag, Tag regex = ^prod-.*$
-
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
     id: "Stage 1"
@@ -11,8 +6,7 @@ steps:
       - "-c"
       - |
         echo "Stage 1 running..."
-        echo "Project: $PROJECT_ID"
-        echo "TAG_NAME: ${TAG_NAME:-<none>}"
+        echo "TAG_NAME = ${TAG_NAME:-none}"
 
   # ---------- DEV Stage ----------
   - name: "gcr.io/cloud-builders/gcloud"
@@ -22,9 +16,8 @@ steps:
       - "-c"
       - |
         case "${TAG_NAME}" in
-          dev-*) 
-            echo "Running DEV stage for tag: ${TAG_NAME}"
-            # yahan dev ke real actions likho
+          dev-*)
+            echo "Running DEV stage for tag ${TAG_NAME}"
             ;;
           *)
             echo "Skipping DEV stage... TAG_NAME=${TAG_NAME}"
@@ -40,9 +33,8 @@ steps:
       - "-c"
       - |
         case "${TAG_NAME}" in
-          prod-*) 
-            echo "Running PROD stage for tag: ${TAG_NAME}"
-            # yahan prod ke real actions likho
+          prod-*)
+            echo "Running PROD stage for tag ${TAG_NAME}"
             ;;
           *)
             echo "Skipping PROD stage... TAG_NAME=${TAG_NAME}"
