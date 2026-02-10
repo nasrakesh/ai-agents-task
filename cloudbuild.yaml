@@ -1,13 +1,46 @@
+substitutions:
+  _ENV: "dev"   # default, but will be overridden by trigger
+
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
+    id: "Stage 1 - Always Run"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        echo "Cloud Build pipeline triggered successfully!"
+        echo "🚀 Stage 1 executing..."
+        echo "Environment passed = ${_ENV}"
         echo "Project ID: $PROJECT_ID"
-        echo "Build working directory:"
+        echo "Current directory:"
         ls -lah
+
+  # ---------- DEV Stage ----------
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "Stage 2 - DEV Logic"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        if [ "${_ENV}" = "dev" ]; then
+          echo "🟩 Running DEV stage..."
+          echo "Do dev-related actions here..."
+        else
+          echo "Skipping DEV stage because _ENV = ${_ENV}"
+        fi
+
+  # ---------- PROD Stage ----------
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "Stage 2 - PROD Logic"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        if [ "${_ENV}" = "prod" ]; then
+          echo "🟥 Running PROD stage..."
+          echo "Do prod-related actions here..."
+        else
+          echo "Skipping PROD stage because _ENV = ${_ENV}"
+        fi
 
 options:
   logging: CLOUD_LOGGING_ONLY
