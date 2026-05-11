@@ -1,5 +1,5 @@
 variable "project_id" {
-default = "cosmic-antenna-462508-s8"
+default = "gcp-proctor"
 }
 
 variable "region" {
