@@ -37,8 +37,6 @@ resource "null_resource" "docker_build" {
 resource "google_cloud_run_service" "agent_service" {
   name     = "ai-agent-service-new"
   location = "us-central1"
-  name     = var.service_name
-  location = var.region
 
   template {
     spec {
