@@ -1,5 +1,6 @@
 # --- Full example code demonstrating LlmAgent with Tools vs. Output Schema ---
 import json # Needed for pretty printing dicts
+
 import vertexai
 
 vertexai.init(
@@ -18,8 +19,8 @@ APP_NAME = "agent_comparison__app"
 USER_ID = "test_user_456"
 SESSION_ID_TOOL_AGENT = "session_tool_agent_xyz"
 SESSION_ID_SCHEMA_AGENT = "session_schema_agent_xyz"
-#MODEL_NAME = "gemini-2.0-flash"
-MODEL_NAME = "gemini-1.0-pro"
+MODEL_NAME = "gemini-1.5-pro-001"
+
 
 # --- 2. Define Schemas ---
 
