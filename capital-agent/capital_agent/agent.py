@@ -1,5 +1,11 @@
 # --- Full example code demonstrating LlmAgent with Tools vs. Output Schema ---
 import json # Needed for pretty printing dicts
+import vertexai
+
+vertexai.init(
+    project="gcp-proctor",
+    location="us-central1"
+)
 
 from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
@@ -13,7 +19,7 @@ USER_ID = "test_user_456"
 SESSION_ID_TOOL_AGENT = "session_tool_agent_xyz"
 SESSION_ID_SCHEMA_AGENT = "session_schema_agent_xyz"
 #MODEL_NAME = "gemini-2.0-flash"
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-3.1-pro-preview"
 
 # --- 2. Define Schemas ---
 
