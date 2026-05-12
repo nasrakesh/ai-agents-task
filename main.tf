@@ -1,4 +1,13 @@
 
+terraform {
+  backend "gcs" {
+    bucket  = "tf-state-gcp-proctor"
+    prefix  = "ai-agent"
+  }
+}
+
+
+
 resource "google_artifact_registry_repository" "docker_repo" {
   location      = var.region
   repository_id = var.repo_name
@@ -26,7 +35,7 @@ resource "null_resource" "docker_build" {
 
 
 resource "google_cloud_run_service" "agent_service" {
-  name     = "ai-agent-service"
+  name     = "ai-agent-service-new"
   location = "us-central1"
 
   template {
@@ -49,7 +58,6 @@ resource "google_cloud_run_service" "agent_service" {
 depends_on = [
     null_resource.docker_build
   ]
-
 }
 
 resource "google_cloud_run_service_iam_member" "public_invoker" {
