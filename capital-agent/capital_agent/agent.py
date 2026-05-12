@@ -19,7 +19,7 @@ APP_NAME = "agent_comparison__app"
 USER_ID = "test_user_456"
 SESSION_ID_TOOL_AGENT = "session_tool_agent_xyz"
 SESSION_ID_SCHEMA_AGENT = "session_schema_agent_xyz"
-MODEL_NAME = "gemini-1.5-pro-001"
+MODEL_NAME = "gemini-2.5-flash"
 
 
 # --- 2. Define Schemas ---
