@@ -20,6 +20,7 @@ resource "null_resource" "docker_build" {
     command = <<EOT
       gcloud builds submit capital-agent \
         --tag=us-central1-docker.pkg.dev/${var.project_id}/${var.repo_name}/capital-agent \
+        --tag=${var.region}-docker.pkg.dev/${var.project_id}/${var.repo_name}/${var.image_name} \
         --project=${var.project_id}
     EOT
   }
@@ -37,11 +38,14 @@ resource "null_resource" "docker_build" {
 resource "google_cloud_run_service" "agent_service" {
   name     = "ai-agent-service-new"
   location = "us-central1"
+  name     = var.service_name
+  location = var.region
 
   template {
     spec {
       containers {
         image = "us-central1-docker.pkg.dev/${var.project_id}/${var.repo_name}/capital-agent"
+        image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repo_name}/${var.image_name}"
         env {
           name  = "AGENT_CONFIG"
           value = "rkteam"
