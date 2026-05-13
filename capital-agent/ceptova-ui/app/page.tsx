@@ -9,7 +9,7 @@ export default function Home() {
       text: "Hi 👋 I am your AI Assistant. Ask me anything!",
     },
   ]);
-
+  
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
