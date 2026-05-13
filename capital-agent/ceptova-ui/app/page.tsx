@@ -18,21 +18,25 @@ export default function Home() {
 
     if (!input.trim()) return;
 
-    // ✅ Add user message to UI
-    const userMsg = {
-      role: "user",
-      text: input
-    };
+    const userText = input;
 
-    setMessages(prev => [...prev, userMsg]);
+    // ✅ Add user message
+    setMessages(prev => [
+      ...prev,
+      {
+        role: "user",
+        text: userText
+      }
+    ]);
 
+    setInput("");
     setLoading(true);
 
     try {
 
-      // ✅ Call your ADK Cloud Run endpoint
+      // ✅ Use your ORIGINAL working endpoint
       const res = await fetch(
-        "https://ai-agent-service-new-502854994569.us-central1.run.app/apps/capital_agent/users/test_user_123/sessions/session_001",
+        "https://ai-agent-service-502854994569.us-central1.run.app/apps/agent_comparison__app/users/test_user_456/sessions/session_tool_agent_xyz",
         {
           method: "POST",
 
@@ -46,7 +50,7 @@ export default function Home() {
 
               parts: [
                 {
-                  text: input
+                  text: userText
                 }
               ]
             }
@@ -56,17 +60,44 @@ export default function Home() {
 
       console.log("STATUS:", res.status);
 
-      // ✅ Convert API response
+      // ✅ Handle server errors
+      if (!res.ok) {
+
+        const errorText = await res.text();
+
+        console.log("SERVER ERROR:", errorText);
+
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "ai",
+            text: `❌ Server Error ${res.status}`
+          }
+        ]);
+
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Parse response
       const data = await res.json();
 
       console.log("API RESPONSE:", data);
 
-      // ✅ Extract AI text
-      const reply =
-        data?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        JSON.stringify(data);
+      // ✅ Extract AI response safely
+      let reply = "No AI response";
 
-      // ✅ Add AI response to UI
+      if (Array.isArray(data) && data.length > 0) {
+
+        const lastMessage = data[data.length - 1];
+
+        reply =
+          lastMessage?.content?.parts?.[0]?.text ||
+          "No text returned";
+
+      }
+
+      // ✅ Show AI message
       setMessages(prev => [
         ...prev,
         {
@@ -90,14 +121,13 @@ export default function Home() {
     }
 
     setLoading(false);
-    setInput("");
   }
 
   return (
 
     <div className="min-h-screen bg-gradient-to-br from-[#eaf2ff] to-[#bcd2f5] relative overflow-hidden">
 
-      {/* Glow Background */}
+      {/* Glow */}
       <div className="absolute w-[600px] h-[600px] bg-blue-400 opacity-20 blur-3xl rounded-full top-[-100px] left-[50%] -translate-x-1/2 animate-pulse pointer-events-none"></div>
 
       {/* Header */}
@@ -115,7 +145,7 @@ export default function Home() {
 
       <div className="flex justify-between items-center px-24 pt-20">
 
-        {/* Left Side */}
+        {/* Left */}
         <div className="max-w-2xl space-y-6">
 
           <h1 className="text-6xl font-bold text-gray-900 leading-tight">
@@ -128,7 +158,7 @@ export default function Home() {
 
         </div>
 
-        {/* Chat Box */}
+        {/* Chat */}
         <div className="w-[380px] backdrop-blur-xl bg-white/70 shadow-[0_20px_60px_rgba(0,0,0,0.15)] rounded-3xl p-5 border border-white/40">
 
           {/* Chat Header */}
@@ -224,3 +254,4 @@ export default function Home() {
     </div>
   );
 }
+
