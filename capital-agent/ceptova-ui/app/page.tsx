@@ -18,7 +18,7 @@ export default function Home() {
 
     if (!input.trim()) return;
 
-    // ✅ Add user message
+    // ✅ Add user message to UI
     const userMsg = {
       role: "user",
       text: input
@@ -30,9 +30,9 @@ export default function Home() {
 
     try {
 
-      // ✅ Call Cloud Run AI Agent
+      // ✅ Call your ADK Cloud Run endpoint
       const res = await fetch(
-        "https://ai-agent-service-new-502854994569.us-central1.run.app/run",
+        "https://ai-agent-service-new-502854994569.us-central1.run.app/apps/capital_agent/users/test_user_123/sessions/session_001",
         {
           method: "POST",
 
@@ -41,14 +41,9 @@ export default function Home() {
           },
 
           body: JSON.stringify({
-            app_name: "capital_agent",
-
-            user_id: "test_user_123",
-
-            session_id: "session_001",
-
-            new_message: {
+            message: {
               role: "user",
+
               parts: [
                 {
                   text: input
@@ -59,17 +54,19 @@ export default function Home() {
         }
       );
 
-      // ✅ Convert response to JSON
+      console.log("STATUS:", res.status);
+
+      // ✅ Convert API response
       const data = await res.json();
 
       console.log("API RESPONSE:", data);
 
-      // ✅ Extract AI response
+      // ✅ Extract AI text
       const reply =
         data?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "No response from AI";
+        JSON.stringify(data);
 
-      // ✅ Show AI message
+      // ✅ Add AI response to UI
       setMessages(prev => [
         ...prev,
         {
@@ -100,10 +97,10 @@ export default function Home() {
 
     <div className="min-h-screen bg-gradient-to-br from-[#eaf2ff] to-[#bcd2f5] relative overflow-hidden">
 
-      {/* Glow */}
+      {/* Glow Background */}
       <div className="absolute w-[600px] h-[600px] bg-blue-400 opacity-20 blur-3xl rounded-full top-[-100px] left-[50%] -translate-x-1/2 animate-pulse pointer-events-none"></div>
 
-      {/* HEADER */}
+      {/* Header */}
       <div className="text-center pt-12">
 
         <h1 className="text-5xl font-bold text-gray-800 tracking-tight">
@@ -118,7 +115,7 @@ export default function Home() {
 
       <div className="flex justify-between items-center px-24 pt-20">
 
-        {/* LEFT */}
+        {/* Left Side */}
         <div className="max-w-2xl space-y-6">
 
           <h1 className="text-6xl font-bold text-gray-900 leading-tight">
@@ -131,10 +128,10 @@ export default function Home() {
 
         </div>
 
-        {/* CHAT BOX */}
+        {/* Chat Box */}
         <div className="w-[380px] backdrop-blur-xl bg-white/70 shadow-[0_20px_60px_rgba(0,0,0,0.15)] rounded-3xl p-5 border border-white/40">
 
-          {/* CHAT HEADER */}
+          {/* Chat Header */}
           <div className="flex items-center gap-3 border-b pb-3">
 
             <div className="w-10 h-10 flex items-center justify-center bg-blue-500 rounded-full text-white">
@@ -147,7 +144,7 @@ export default function Home() {
 
           </div>
 
-          {/* MESSAGES */}
+          {/* Messages */}
           <div className="h-[320px] overflow-y-auto mt-4 space-y-3">
 
             {messages.map((m, i) => (
@@ -192,7 +189,7 @@ export default function Home() {
 
           </div>
 
-          {/* INPUT */}
+          {/* Input */}
           <div className="flex gap-2 mt-4">
 
             <input
